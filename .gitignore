@@ -1,6 +1,7 @@
 # Keil GUI 用户配置
 *.uvmpw.uvgui.*
 *.uvguix.*
+*.uvoptx
 
 # 构建输出文件
 */MDK-ARM/project/

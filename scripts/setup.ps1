@@ -12,7 +12,7 @@ try {
     Invoke-WebRequest -Uri $pyUrl -OutFile $tempFile -UseBasicParsing
     
     # 正常运行文件，参数透传
-    python $tempFile $args
+    python $tempFile --run
     
     # 运行结束后删除临时文件
     Remove-Item $tempFile -ErrorAction SilentlyContinue

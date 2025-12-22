@@ -59,6 +59,6 @@
 		$env:GITHUB_MIRROR = 'https://git.likangfeng.edu.eu.org/https://github.com'; 
 		$m = $env:GITHUB_MIRROR;
 		iex ((iwr "$m/neoluxis/keil_library_template/raw/main/scripts/setup.ps1").Content) 
-	} --run	
+	} 
 	```
 4. 设置参数即可

@@ -1,4 +1,19 @@
-libABC.uvmpw.uvgui.*
+# Keil GUI 用户配置
+*.uvmpw.uvgui.*
+*.uvguix.*
 
+# 构建输出文件
 */MDK-ARM/project/
 */MDK-ARM/startup*.lst
+*.crf
+*.d
+*.o
+*.build_log.htm
+*.lnp
+*.map
+*.sct
+*.dep
+*.hex
+*.lst
+*.axf
+*.htm

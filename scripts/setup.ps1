@@ -4,13 +4,20 @@ if (-not $mirror) { $mirror = "https://github.com" }
 $mirror = $mirror.TrimEnd('/')
 
 $pyUrl = "$mirror/neoluxis/keil_library_template/raw/main/scripts/project_setup.py"
+$tempFile = "$env:TEMP\tmp_setup_$(Get-Random).py"
 
 Write-Host "[*] Mirror: $mirror" -ForegroundColor Cyan
 try {
-    $pyContent = (Invoke-WebRequest -Uri $pyUrl -UseBasicParsing).Content
+    # 下载为临时文件
+    Invoke-WebRequest -Uri $pyUrl -OutFile $tempFile -UseBasicParsing
     
-    $pyContent | python - $args
+    # 正常运行文件，参数透传
+    python $tempFile $args
+    
+    # 运行结束后删除临时文件
+    Remove-Item $tempFile -ErrorAction SilentlyContinue
 }
 catch {
-    Write-Error "Failed to fetch or execute the setup script."
+    Write-Error "下载或执行失败。"
+    if (Test-Path $tempFile) { Remove-Item $tempFile }
 }

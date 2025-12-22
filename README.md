@@ -4,7 +4,7 @@
 
 示例库名为 `libABC`，测试项目为 `libABC_tests`，并有一个多项目工作空间，已经添加了两个项目，可以直接打开。
 
-[参考文档](https://github.com/neoluxis/keil_library_template/tree/main/doc)
+[参考文档](./doc)
 
 对于本示例函数库来说，虽然函数中没有用到 STM32 相关的固件库，但是仓库中却附带上了，并且 STM32 HAL 库的源码文件并未在库项目中添加，即并不会编译，这样的行为其实是不好的。
 

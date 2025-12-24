@@ -22,3 +22,6 @@
 *.dbgconf
 
 *_tests/Library
+
+# release generated
+*.zip

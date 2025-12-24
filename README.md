@@ -21,7 +21,7 @@
 	git keil_library_template
 	```
 4. 运行自动配置脚本
-	```bash
+	```text
 	# Dry run
 	python scripts/project_setup.py
 	项目名称(不需要写lib): XXX 对应的项目即为 libXXX
@@ -59,7 +59,7 @@
 	winget install python
 	```
 3. 运行命令
-	```Powershell
+	```powershell
 	& { 
 		$env:GITHUB_MIRROR = 'https://git.likangfeng.edu.eu.org/https://github.com'; 
 		$m = $env:GITHUB_MIRROR;

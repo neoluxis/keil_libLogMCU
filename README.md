@@ -15,7 +15,7 @@
 ## 使用方法
 ### Fork 后以模板新建 Repo
 
-1. Fork 此项目到自己的账户
+1. [Fork](https://github.com/neoluxis/keil_library_template/fork) 此项目到自己的账户
 2. 点击右上角 `Use this template`，选择 `Create a new repository`
 3. 将仓库克隆到本地，进入文件夹
 	```bash

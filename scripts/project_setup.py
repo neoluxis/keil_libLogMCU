@@ -234,7 +234,9 @@ def main(dryrun=True):
     gen_default_c("./libABC_tests/Core/Src/main.c", project, domain, dryrun)
     gen_versionsch(author, email, lic, target_mcu, dryrun)
     gen_default_c("./libABC/Library/src/libABC.c", project, domain, dryrun)
+    gen_default_c("./libABC/Library/src/example_oop.c", project, domain, dryrun)
     gen_default_h("./libABC/Library/inc/dev/seekit/libABC/libABC.h", project, domain, dryrun)
+    gen_default_h("./libABC/Library/inc/dev/seekit/libABC/example_oop.h", project, domain, dryrun)
 
     setup_project("seekit.dev", "libABC", domain, project, dryrun, verbose=True)
     return project

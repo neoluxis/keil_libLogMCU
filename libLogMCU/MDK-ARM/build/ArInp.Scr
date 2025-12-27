@@ -1,0 +1,3 @@
+--create .\build\libLogMCU.lib
+.\build\logger_mcu.o
+.\build\versions.o

@@ -1,85 +1,103 @@
-# LibABC 
+# LibLogMCU 
 
 ## 简介
 
-LibABC 是一个示例模板函数库，里面包含了几个函数和变量作为示例
+LiLogMCU 是纯头文件，提供了数个日志输出函数
+
+定义了接受参数的宏，调用用户在 MCU 平台定义好的 `printf()` 函数，通过串口或其他接口打印日志
+
+## Prerequisites
+
+嵌入式平台一般没有内置的可用的 `printf()`，
+若在嵌入式平台使用该库，需要用户事先重写 `fputc()` 即重定向 `printf()` 函数，
+
+在 Keil MDK 中，需要首先勾选 `Use MicroLib` 之后写代码
+
+```c 
+#include "stdio.h"
+#include "stdint.h"
+#include "main.h"
+#include "usart.h"
+
+int fputc(int ch, FILE *f)
+{
+  // 在这里使用实际发送的接口重新定义发送功能
+  // HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xffff);
+  return ch;
+}
+int fgetc(FILE * f)
+{
+  // 在这里使用实际接受的接口重新定义接受功能
+  uint8_t ch = 0;
+  // HAL_UART_Receive(&huart1,&ch, 1, 0xffff);
+  return ch;
+}
+
+```
 
 ## API Referrence
 
-### LibABC
+### LibLogMCU
 
-头文件：`dev/seekit/libABC/libABC.h`
+头文件：`cc/neolux/libLogMCU/logger_mcu.h`
 
-#### `add(int a, int b)`
+#### `LOG_LEVEL`
 
-将两个数字相加，返回结果和溢出标志
+日志等级，高于该等级的日志不打印。可选：`LOG_LEVEL_ERROR`, `LOG_LEVEL_WARN`, `LOG_LEVEL_INFO`, `LOG_LEVEL_DEBUG`
 
-- 参数：int a：加数
-	   int b：加数
-- 返回值：int\[2\]: \[result, flag\]
+#### `_LOG(level, fmt, ...)`
 
-```
-[result, flag] = add(int, int)
-```
+以 `level` 的日志等级输出日志 
 
-#### `example_function()`
-
-使 MCU 跳过一个时钟周期
-
-- 参数：无
+- 参数：int level：日志等级，可选：`LOG_LEVEL_ERROR`, `LOG_LEVEL_WARN`, `LOG_LEVEL_INFO`, `LOG_LEVEL_DEBUG`
+	   char \*b：格式字符串，要求同 `printf()`
+	   ...：格式字符串所需数据，要求同 `printf()`
 - 返回值：无
 
 ```
-example_function()
+_LOG(LOG_LEVEL_INFO, "PID/P: %d", pid.p);
 ```
 
-### Example OOP
+#### `LOG_E(fmt, ...)`
 
-头文件：`dev/seekit/libABC/example_oop.h`
+以错误等级输出日志。默认格式：`[level] [file:line] message`
 
-#### Example_t
+- 参数：同 `printf()`
+- 返回值：无
 
-|字段|类型|描述|
-|:---:|:---:|:---:|
-|id|uint8_t|示例的 id|
-|info|const char\*|示例的描述信息|
+```
+LOG_E("PID/P: %d", pid.p);
+```
 
-##### example_init(Example_t* ex, const char* info)
+#### `LOG_W(fmt, ...)`
 
-- 初始化一个 Example_t 的实例，自动生成 id
-- |参数|描述|
-  |:---:|:---:|
-  |ex|example 实例|
-  |info|示例的描述信息|
-- |返回值|描述|
-  |:---:|:---:|
-  |int|类的实例的数量|
-  
-##### example_get_id(const Example_t* ex)
+以警告等级输出日志。默认格式：`[level] [file:line] message`
 
-- 获取 Example_t 的 id
-- |参数|描述|
-  |:---:|:---:|
-  |ex|example 实例|
-- |返回值|描述|
-  |:---:|:---:|
-  |uint8_t|Example_t 实例的 id|  
-  
-##### example_get_info(const Example_t* ex)
+- 参数：同 `printf()`
+- 返回值：无
 
-- 获取 Example_t 的描述
-- |参数|描述|
-  |:---:|:---:|
-  |ex|example 实例|
-- |返回值|描述|
-  |:---:|:---:|
-  |const char\*|Example_t 实例的描述|
-  
-##### example_get_info(const Example_t* ex)
+```
+LOG_W("Get null from ir module: id=%02d!", irs[i].id);
+```
 
-- 通过用户定义的 stdout 如串口输出表达 Example_t 的字符串
-  格式为：`id: info`
-- |参数|描述|
-  |:---:|:---:|
-  |ex|example 实例|
-    
+#### `LOG_I(fmt, ...)`
+
+以信息等级输出日志。默认格式：`[level] [file:line] message`
+
+- 参数：同 `printf()`
+- 返回值：无
+
+```
+LOG_I("All init done!");
+```
+
+#### `LOG_D(fmt, ...)`
+
+以调试等级输出日志。默认格式：`[level] [file:line] message`
+
+- 参数：同 `printf()`
+- 返回值：无
+
+```
+LOG_D("L Motor Vel: %.03f", speed);
+```

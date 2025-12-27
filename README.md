@@ -1,76 +1,17 @@
-# Keil 函数库模板
+# Keil LibLogMCU (适用于 MCU 的日志库，使用 Keil 编译)
 
-此模板提供两个 Keil 项目，分别编写函数库和测试程序。
+## 简介
 
-示例库名为 `libABC`，测试项目为 `libABC_tests`，并有一个多项目工作空间，已经添加了两个项目，可以直接打开。
+本库是纯头文件，提供了数个日志输出函数
 
-[参考文档](./doc)
+定义了接受参数的宏，调用用户在 MCU 平台定义好的 `printf()` 函数，通过串口或其他接口打印日志
 
-对于本示例函数库来说，虽然函数中没有用到 STM32 相关的固件库，但是仓库中却附带上了，并且 STM32 HAL 库的源码文件并未在库项目中添加，即并不会编译。
-这种行为，即把项目无关的源码放进仓库，是不好的。
+[使用文档](./doc)
 
-本模板用于 MCU 的函数库开发。如果不针对特定平台，可以直接删除仓库中 `libABC` 中 `Drivers` 文件夹的内容；如果需要使用特定平台的厂商库函数，
-则把 `Drivers` 中原有 `.c/h` 全部删除，然后添加厂商的头文件即可，不需要附带源文件。
+## TODO
 
-## 使用方法
-### Fork 后以模板新建 Repo
-
-1. [Fork](https://github.com/neoluxis/keil_library_template/fork) 此项目到自己的账户
-2. 点击右上角 `Use this template`，选择 `Create a new repository`
-3. 将仓库克隆到本地，进入文件夹
-	```bash
-	git clone git@github.com:<username>/keil_library_template.git
-	git keil_library_template
-	```
-4. 运行自动配置脚本
-	```text
-	# Dry run
-	python scripts/project_setup.py
-	项目名称(不需要写lib): XXX 对应的项目即为 libXXX
-	作者(seekit): Your name
-	倒序域名(seekit.dev): Your domain, use your name and dot cc if you don't have one
-	E-Mail: Your email, actually no regex matching written
-	开源证书(MIT): Usually MIT, GNU or Apache, or any you want
-
-	==================== Git 分支选择 ====================
-	[1] main [STM32F10x]
-	[2] remotes/origin/main [STM32F10x]
-
-	请选择目标平台编号 (1-2, 默认 1): Different branches contain projects for different target platform
-	
-	# Run!
-	python scripts/project_setup.py --run
-	项目名称(不需要写lib): PID
-	作者(seekit): seekit
-	倒序域名(seekit.dev): seekit.dev
-	E-Mail: user@email.com
-	开源证书(MIT): MIT
-
-	==================== Git 分支选择 ====================
-	[1] main [STM32F10x]
-	[2] remotes/origin/main [STM32F10x]
-
-	请选择目标平台编号 (1-2, 默认1): 1
-	
-	打开工作空间？(Y/n) y
-	```
-	
-### 直接利用 Powershell 命令
-
-1. 在某文件夹（例如 E:/）打开 Powershell
-2. 如果没有 Python：
-	```powershell
-	winget install python
-	```
-3. 运行命令
-	```powershell
-	& { 
-		$env:GITHUB_MIRROR = 'https://git.likangfeng.edu.eu.org/https://github.com'; 
-		$m = $env:GITHUB_MIRROR;
-		iex ((iwr "$m/neoluxis/keil_library_template/raw/main/scripts/setup.ps1").Content) 
-	} 
-	```
-4. 信息填写如上
+- [x] 完成日志等级设置
+- [ ] 自定义日志风格
 
 ## 提交规范
 
@@ -86,33 +27,3 @@
 | style | 修改代码风格之类 |
 | perf | 在不影响内部行为和功能情况下进行性能优化 |
 | chore | 杂项，上述分类未包含的内容，请勿滥用 |
-
-## TODO
-
-### 支持更多目标平台
-目前只做了 STM32F10x 的模板，即具有库项目和测试项目的模板，未来可能会制作其他模板。通过不同分支进行区分。
-
-通常很多函数库并不止针对于一种 MCU，而且并不依赖于某种特定芯片的固件库，对于这种函数库可以直接用任意分支开发。
-
-- [x] STM32F10x
-- [ ] STM32F40x
-- [ ] STM32H72x
-- [ ] Other
-
----
-
-## 备注
-
-1. 通过该模板创建的函数库代码仓库的 README 应描述函数库的内容，用处，使用方法
-
-2. 在 doc 目录中写完整的使用文档并附链接在仓库 README 便于点击查看
-
-3. 创建的仓库名应该与仓库中代码库的名相同或表达相一致的信息，以免产生误解
-
-4. 不允许直接在仓库根目录创建项目，即不允许项目root作为仓库root，避免导致根目录信息过于杂乱
-
-5. 请从一开始就保持仓库整洁，不要把编译后文件、临时文件、临时备忘录等文件添加进来
-
-6. 建议保持源码和二进制两种方式进行分发，并维护好 release、issue、pull request等
-
-7. 模板中提供了面向过程和面向对象的示例可供参考，包括文档注释的示例

@@ -1,7 +1,7 @@
 @echo off
 chcp 65001
 
-set "target=libABC"
+set "target=libLogMCU"
 
 if exist "./%target%/" (
     echo 找到 %target% 在当前目录，开始打包...
@@ -13,9 +13,9 @@ if exist "./%target%/" (
 )
 
 echo Zipping sources ans headers...
-tar -a -c -f libABC_src.zip -C ./libABC Library
+tar -a -c -f libLogMCU_src.zip -C ./libLogMCU Library
 
 echo Zipping lib and headers...
-tar -a -c -f libABC_bin.zip -C ./libABC_tests Library
+tar -a -c -f libLogMCU_bin.zip -C ./libLogMCU_tests Library
 
 pause

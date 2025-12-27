@@ -105,13 +105,16 @@ def gen_default_h(path, project, domain, dryrun=True):
         with open(path, 'w', encoding='utf-8') as f:
             f.write(data)
 
+
 def setup_project(old_domain, old_project, new_domain, new_project, dryrun=True, verbose=False):
     def domain_to_path(domain):
         if not domain: return Path("")
         return Path(*domain.split('.')[::-1])
 
     old_root, new_root = Path(old_project), Path(new_project)
-    old_test_root, new_test_root = Path(f"{old_project}_tests"), Path(f"{new_project}_tests")
+    old_test_root = Path(f"{old_project}_tests")
+    new_test_root = Path(f"{new_project}_tests")
+    
     old_dom_path = domain_to_path(old_domain)
     new_dom_path = domain_to_path(new_domain if new_domain else old_domain)
 
@@ -120,46 +123,66 @@ def setup_project(old_domain, old_project, new_domain, new_project, dryrun=True,
     old_pw = Path(f"{old_project}.uvmpw")
     new_pw = Path(f"{new_project}.uvmpw")
     if old_pw.exists():
-        if dryrun: print(f"[Plan] Rename werkspazio: {old_pw} -> {new_pw}")
+        if dryrun: print(f"[Plan] Rename Workspace: {old_pw} -> {new_pw}")
         else: os.rename(old_pw, new_pw)
 
-    roots = [(old_root, new_root), (old_test_root, new_test_root)]
-    for o_r, n_r in roots:
+    for o_r, n_r in [(old_root, new_root), (old_test_root, new_test_root)]:
         if o_r.exists() and not n_r.exists():
-            if dryrun: print(f"[Plan] Rename dir: {o_r} -> {n_r}")
+            if dryrun: print(f"[Plan] Rename Root Dir: {o_r} -> {n_r}")
             else: os.rename(o_r, n_r)
 
-    base_lib = new_root if not dryrun else old_root
-    base_test = new_test_root if not dryrun else old_test_root
+    curr_lib = new_root if not dryrun and new_root.exists() else old_root
+    curr_test = new_test_root if not dryrun and new_test_root.exists() else old_test_root
 
-    tasks = [
-        (base_lib / "Library" / "inc" / old_dom_path / old_project / f"{old_project}.h", 
-         new_root / "Library" / "inc" / new_dom_path / new_project / f"{new_project}.h"),
-        (base_lib / "Library" / "src" / f"{old_project}.c", 
-         new_root / "Library" / "src" / f"{new_project}.c"),
-        (base_lib / "MDK-ARM" / f"{old_project}.uvprojx", 
-         new_root / "MDK-ARM" / f"{new_project}.uvprojx"),
-        (base_test / "MDK-ARM" / f"{old_project}_tests.uvprojx", 
-         new_test_root / "MDK-ARM" / f"{new_project}_tests.uvprojx")
+    move_tasks = []
+
+    lib_inc = curr_lib / "Library" / "inc"
+    old_inc_target = lib_inc / old_dom_path
+    
+    if old_inc_target.exists():
+        for file_path in old_inc_target.rglob("*"):
+            if file_path.is_file():
+                rel_path = file_path.relative_to(old_inc_target)
+                
+                new_filename = file_path.name.replace(old_project, new_project)
+                
+                target_path = new_root / "Library" / "inc" / new_dom_path / rel_path.parent / new_filename
+                move_tasks.append((file_path, target_path))
+
+    other_targets = [
+        (curr_lib / "Library" / "src", new_root / "Library" / "src"),
+        (curr_lib / "MDK-ARM", new_root / "MDK-ARM"),
+        (curr_test / "MDK-ARM", new_test_root / "MDK-ARM")
     ]
 
-    for src, dst in tasks:
-        if src.exists():
-            if dryrun: print(f"[Plan] Move files: {src} -> {dst}")
-            else:
-                dst.parent.mkdir(parents=True, exist_ok=True)
-                shutil.move(str(src), str(dst))
-                if verbose: print(f"[Done] Moved: {src.name}")
+    for src_dir, dst_dir in other_targets:
+        if not src_dir.exists(): continue
+        for file_path in src_dir.rglob("*"):
+            if file_path.is_file() and old_project in file_path.name:
+                new_filename = file_path.name.replace(old_project, new_project)
+                target_path = dst_dir / file_path.parent.relative_to(src_dir) / new_filename
+                move_tasks.append((file_path, target_path))
+
+    for src, dst in move_tasks:
+        if src == dst: continue
+        if dryrun:
+            print(f"[Plan] Move: {src} -> {dst}")
+        else:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(src), str(dst))
+            if verbose: print(f"[Done] Moved: {src.name}")
 
     if not dryrun:
-        clean_target = new_root / "Library" / "inc" / old_dom_path / old_project
-        curr = clean_target
-        while curr != (new_root / "Library" / "inc"):
-            if curr.exists() and not os.listdir(curr):
-                curr.rmdir()
-                curr = curr.parent
-            else: break
+        clean_target = new_root / "Library" / "inc" / old_dom_path
+        if clean_target.exists():
+            for root, dirs, files in os.walk(clean_target, topdown=False):
+                for d in dirs:
+                    dir_path = Path(root) / d
+                    try:
+                        if not os.listdir(dir_path): dir_path.rmdir()
+                    except: pass
 
+    print(f"\n{' [Finished] ':=^60}\n")
 
 def get_git_branches():
     try:
